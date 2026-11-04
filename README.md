@@ -25,6 +25,14 @@ The shared Source64 player/runner is distributed as the compiled browser applica
 | BattleTanx | Ahead-of-time compilation of the original 1,738-function resident program and audio microcode; WebGPU. | Matching USA game file, 8 MiB. |
 | BattleTanx: Global Assault | Ahead-of-time compilation of the original 1,879-function catalogue, with the native port's compatibility adaptations; WebGPU. | Matching USA game file, 8 MiB. |
 
+The library also displays these clearly labeled **work-in-progress placeholders**. They are not playable browser builds yet:
+
+| Project | Current status | Source |
+| --- | --- | --- |
+| Madden Football 64 | Decompilation in progress; browser engine and input requirements are not established. | [Madden-64](https://github.com/TheGh0stShip/Madden-64) |
+| Sydney 2000 (Prototype) | Prototype decompilation in progress. The recovered image is a `.bin`, not a standard `.z64`; it is not hosted by Source64. | [Sydney-2000-N64-Prototype](https://github.com/TheGh0stShip/Sydney-2000-N64-Prototype) |
+| Superman: The New Superman Adventures | Decompilation in progress; browser engine and input requirements are not established. | [Superman-64](https://github.com/TheGh0stShip/Superman-64) |
+
 These implementation paths are deliberately identified separately. Rugrats compiles recovered C directly; the other three translate the original program ahead of time into compiled browser code. Source64 does not include a generic runtime N64 CPU interpreter, and selecting an arbitrary ROM does not create a new browser port.
 
 The primary BattleTanx entry uses the original program's complete resident catalogue. It retains the original menus, campaign, intermissions, and multiplayer functions. The extent of playtesting is documented separately from the amount of code included.
@@ -257,6 +265,9 @@ The detailed performance roadmap, measurements and acceptance criteria are maint
 - [BattleTanx](https://github.com/TheGh0stShip/BattleTanx)
 - [BattleTanx: Global Assault](https://github.com/TheGh0stShip/BattleTanx-Global-Assault)
 - [BattleTanx: Global Assault PC port](https://github.com/TheGh0stShip/BattleTanx-Global-Assault-PC-Port)
+- [Madden Football 64](https://github.com/TheGh0stShip/Madden-64)
+- [Sydney 2000 N64 Prototype](https://github.com/TheGh0stShip/Sydney-2000-N64-Prototype)
+- [Superman: The New Superman Adventures](https://github.com/TheGh0stShip/Superman-64)
 
 Original game code, assets, names, and trademarks remain with their respective rights holders. Runtime and third-party components retain their own licenses and notices.
 
