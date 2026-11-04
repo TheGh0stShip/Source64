@@ -43,6 +43,18 @@ The primary BattleTanx entry uses the original program's complete resident catal
 
 Each game runs in its own same-origin frame, with its own engine, audio, workers, and save namespace. The shared shell handles navigation and session lifecycle. Returning to the library requests shutdown and waits up to five seconds for the game to confirm its save flush before releasing the frame. If shutdown fails or times out, the player reports that persistence is unconfirmed.
 
+## Hosted library
+
+The current private player is deployed to **Azure Static Web Apps Free**:
+
+**[Open Source64](https://polite-mushroom-0aadeea10.4.azurestaticapps.net/)**
+
+Sign in with the authorized **TheGh0stShip** GitHub account. Application files require the `source64_owner` website role; an arbitrary signed-in account is not granted that role. The generated Azure address contains no personal name. A custom domain will be documented after registration, DNS validation, and HTTPS activation are complete.
+
+The Azure deployment preserves the same-origin game frames and the isolation headers required by the threaded engines. Live checks on November 4, 2026 confirmed anonymous requests could not retrieve the library, Nagano/BattleTanx Wasm files, or Rugrats assets; owner access succeeded; and Rugrats launched and returned to the library with origin isolation enabled. WebGPU gameplay could not be verified in the cloud test browser because it could not obtain a GPU adapter. Hosting migration does not itself establish an audio or FPS improvement.
+
+**Saves and remembered game files belong to their browser origin.** Before switching addresses, export supported saves from the previous installation and import them into the matching game on the new address. Remembered game files and preferences do not transfer automatically. Rugrats currently has no persistent save export.
+
 ## Getting started
 
 1. Open the library in a capable desktop browser.
