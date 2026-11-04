@@ -4,8 +4,6 @@
 
 Source64 brings individual N64 browser ports into a shared player. Select a game, load its required game data, play, and return to the collection without leaving the application. The interface is branded **64 / Source**.
 
-**[Open the game library](https://n64-decompiled-runner.steven-kaun.chatgpt.site/)**
-
 The hosted library currently requires authorized account access. A public GitHub README does not grant access to the hosted application.
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
@@ -213,7 +211,7 @@ The next engine work is prioritized by the evidence needed to identify and remov
 
 A frame-rate claim will also need a defined presentation observation method. Original simulation ticks, completed game renders, GPU completion and images actually displayed are different stages. VI callbacks, browser animation callbacks and display-list counts alone cannot establish presented FPS.
 
-The detailed [performance roadmap](https://n64-decompiled-runner.steven-kaun.chatgpt.site/performance-roadmap.html), measurements and acceptance criteria are maintained with the hosted application's build evidence. The hosted pages require authorized access. This public repository continues to contain documentation only.
+The detailed performance roadmap, measurements and acceptance criteria are maintained with the hosted application's build evidence. The hosted pages require authorized access. This public repository continues to contain documentation only.
 
 ## Related decompilation projects
 
