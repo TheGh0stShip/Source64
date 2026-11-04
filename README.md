@@ -35,7 +35,8 @@ The primary BattleTanx entry uses the original program's complete resident catal
 - Hold-to-repeat A/B on the standard controller's X/Y buttons in all four included games.
 - Fullscreen display, mute, restart, and host pause where the engine implements it.
 - Per-game save storage and supported save import/export.
-- Session diagnostics and downloadable logs.
+- Rendering-quality choices for both BattleTanx games, with 2× as the default and a 1× Performance option.
+- Session diagnostics and downloadable logs, including BattleTanx audio queues and native renderer timings.
 - Optional browser-local storage for remembered original game files.
 
 Each game runs in its own same-origin frame, with its own engine, audio, workers, and save namespace. The shared shell handles navigation and session lifecycle. Returning to the library requests shutdown and waits up to five seconds for the game to confirm its save flush before releasing the frame. If shutdown fails or times out, the player reports that persistence is unconfirmed.
@@ -53,6 +54,22 @@ The loader accepts uncompressed **.z64, .n64, and .v64** files, normalizes their
 Nagano and both BattleTanx builds require **HTTPS, WebGPU, WebAssembly threads, and cross-origin isolation**. These builds initially reserve 1 GiB of WebAssembly memory. Rugrats has a lighter engine and a software graphics fallback. Mobile support and performance are not established.
 
 The original games use a 4:3 picture. Fullscreen preserves that ratio, so widescreen displays can have side bars. The original game may also draw its own borders. Use the game's **Start** button for pause when the shared Pause control is unavailable.
+
+## Rendering quality and performance
+
+For **BattleTanx** and **BattleTanx: Global Assault**, open **Settings → Rendering quality**:
+
+| Setting | Internal rendering | Use |
+| --- | --- | --- |
+| **Performance · 1×** | Original resolution scale. | Lowest GPU pixel workload. |
+| **Balanced · 2×** | Fixed double resolution scale; the default. | More detail with a bounded rendering workload. |
+| **Match window** | Integer scale based on the game canvas. | A sharper image in larger windows, with more GPU work as the scale increases. |
+
+All modes keep the picture fitted to the available 4:3 game area. Selecting 1× does not make the game window smaller. Changes apply when the game next starts or restarts. These settings currently affect the two BattleTanx modules.
+
+The original game timing, original renderer frame pacing, and framebuffer data returned to the game are preserved. Lower internal resolution can help a GPU-limited session maintain the game's intended cadence; it is not a game-speed unlock. A rendered FPS gain has not yet been measured on browser/GPU hardware.
+
+**Session details** includes completed native renderer-call counts and timings, selected resolution, audio queue depth, underruns, deliberate stale-audio discards, and available browser audio-latency estimates. Renderer calls include waiting time; their counts are not presented frames per second. Download a session log after a problematic scene to retain this evidence.
 
 ## Turbo controls
 
@@ -95,6 +112,30 @@ The application's **Game integration guide** documents package metadata, loading
 The shared library and Rugrats startup, input, pause/resume, and return flow have been exercised in a browser. Scripted execution of the original BattleTanx and Global Assault programs reaches campaign gameplay. Nagano's original menus and event code have passed CPU/RSP checks, including a correction for executable event overlays delivered in chunks.
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
+
+### Player update 1.2.0
+
+**BattleTanx audio:** its existing SDK binding was correct, but the browser bridge reported the entire host queue to a scheduler that needs the current audio DMA remainder. That feedback held production at 21,600 source frames per second against the game's 22,050 Hz sample rate. The bridge now tracks the current DMA, and the browser output limits exceptional stale backlogs and smooths short interruption edges.
+
+In matched 12-second runs of the actual CPU/RSP code, with a clocked output consumer and a simulated 300 ms stall at six seconds:
+
+| Measurement | Previous output | Corrected output |
+| --- | --- | --- |
+| Modeled underrun | 110.1 ms | 0 ms |
+| Audio still queued at the end | 194.1 ms | 27.7 ms |
+| Producer capacity drops | 0 | 0 |
+| Deliberately discarded stale source frames after the stall | 0 | 6,267 |
+| Graphics submissions | 350 | 350 |
+
+The stale-frame discard lets sound catch up after a long interruption. These queue/pacing results are controlled measurements, not audible device latency or rendered FPS. A separate 19.8-second scripted campaign run completed drive/fire input and native shutdown, with a 9.8 ms ending queue and no capacity drops, but recorded 17.3 ms of modeled audio gaps. Loading and host scheduling still produce variation.
+
+**Global Assault audio:** its different scheduler passed a 16-second clocked-consumer check with zero modeled empty time after startup, zero producer drops, and a 15.7 ms ending queue. Its feedback policy is retained. Both BattleTanx outputs receive the independently verified shared-ring race fix, bounded backlog recovery, 2 ms edge smoothing, and diagnostics. Worklet fixtures cover concurrent flushes, cursor wrap, underruns, and high-sample-rate recovery.
+
+**Rendering:** both engines include the three quality modes above and default to Balanced 2×. This bounds internal resolution independently of the fullscreen display size. Additional native timing counters help identify expensive rendering calls without labeling them as FPS.
+
+**Compiler evaluation:** a stronger final WebAssembly optimization reduced the test binary size by 8.46%, but four counterbalanced original-campaign runs showed mixed CPU results. Median steady process CPU cost was 212.3 ms/s with the existing link and 221.5 ms/s with the candidate. The release retains the existing optimization level because the candidate did not establish faster execution. GPU rendering was not part of that benchmark.
+
+The shared quality control and its persistence were verified in a browser. Host and adapter checks cover applying the selected mode before native startup, restart behavior, audio diagnostics, and save/shutdown handling. Audible output and WebGPU performance still need validation on the user's device. Nagano's separate memory-access crash remains under investigation.
 
 ### Player update 1.1.0
 
