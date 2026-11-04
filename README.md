@@ -8,7 +8,7 @@ The hosted library currently requires authorized account access. A public GitHub
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.3.0**.
+Current player release: **1.3.1**.
 
 ## About this repository
 
@@ -36,8 +36,8 @@ The primary BattleTanx entry uses the original program's complete resident catal
 - Fullscreen play with controls that overlay the picture and hide during play.
 - In-player **Settings**, **Return to game**, mute, restart, and host pause where the engine implements it.
 - Per-game save storage and supported save import/export.
-- Rendering-quality defaults and per-game overrides for both BattleTanx games, with Balanced 2× as the default.
-- An opt-in **Performance** panel, local 30-second captures and quality comparisons for both BattleTanx games.
+- Rendering-quality defaults and per-game overrides for Nagano and both BattleTanx games, with Balanced 2× as the default.
+- An opt-in **Performance** panel, local 30-second captures and quality comparisons for Nagano and both BattleTanx games.
 - Downloadable session logs and JSON reports, with the last crash report retained separately from a restarted session.
 - Optional browser-local storage for remembered original game files.
 
@@ -65,7 +65,7 @@ The controls remain available while using shared-player pause, an open dialog or
 
 ## Rendering quality and performance
 
-For **BattleTanx** and **BattleTanx: Global Assault**, open **Settings** from the library or the active player. **Default rendering quality** sets the library preference. **This game's quality** can override it for the selected or active supported game; choose **Use default** to follow the library preference again.
+For **Nagano Winter Olympics ’98**, **BattleTanx** and **BattleTanx: Global Assault**, open **Settings** from the library or the active player. **Default rendering quality** sets the library preference. **This game's quality** can override it for the selected or active supported game; choose **Use default** to follow the library preference again.
 
 | Setting | Internal rendering | Use |
 | --- | --- | --- |
@@ -73,13 +73,13 @@ For **BattleTanx** and **BattleTanx: Global Assault**, open **Settings** from th
 | **Balanced · 2×** | Fixed double resolution scale; the default. | More detail with a bounded rendering workload. |
 | **Match window** | Integer scale based on the game canvas. | A sharper image in larger windows, with more GPU work as the scale increases. |
 
-All modes keep the picture fitted to the available 4:3 game area. Selecting 1× does not make the game window smaller. Preferences are kept in this browser, and changes apply when the game next starts or restarts. The player distinguishes the saved preference from the quality currently running. These settings currently affect the two BattleTanx modules.
+All modes keep the picture fitted to the available 4:3 game area. Selecting 1× does not make the game window smaller. Preferences are kept in this browser, and changes apply when the game next starts or restarts. The player distinguishes the saved preference from the quality currently running. These settings currently affect Nagano and both BattleTanx modules.
 
 The original game timing, original renderer frame pacing, and framebuffer data returned to the game are preserved. Lower internal resolution can help a GPU-limited session maintain the game's intended cadence; it is not a game-speed unlock. A rendered FPS gain has not yet been measured on browser/GPU hardware.
 
 ### Performance panel and local captures
 
-Both BattleTanx games provide live native measurements through **Performance** in the player. The panel separates completed renderer calls and their mean duration, game-audio queue depth and ring gaps, browser callback intervals, and optional browser output gaps. **Nagano and Rugrats currently provide session reports, but do not expose these live native measurements in the panel.**
+Nagano and both BattleTanx games provide live native measurements through **Performance** in the player. The panel separates completed renderer calls and their mean duration, game-audio queue depth and ring gaps, browser callback intervals, and optional browser output gaps. **Rugrats currently provides session reports without these live native measurements in the panel.**
 
 Sampling is opt-in: it runs approximately once per second while the panel is open or a recording is active, and stops when it is no longer needed. Choose **Record 30 seconds** during a repeatable scene. Closing the panel lets an active recording continue; hiding the page or ending the playing session finishes it with the appropriate reason. Captures and comparisons stay in this browser.
 
@@ -137,13 +137,37 @@ The shared library and Rugrats startup, input, pause/resume, and return flow hav
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
 
+### Player update 1.3.1
+
+**Audio pacing:** Nagano and BattleTanx have rebuilt native engines that account for older pending audio when timing jitter creates a deeper software queue. The original games submit a DMA buffer before querying audio length; reporting only the current buffer can hide older queued sound and lead to repeated catch-up cuts. The corrected feedback preserves the ordinary one/two-buffer result and caps deeper-backlog feedback at a separately verified safe bound for each game. Original playback rates, game clocks, resampling and audio microcode are retained. Global Assault uses a different scheduler and retains its existing feedback.
+
+An equal-length test executing Nagano's original CPU and audio RSP code used **7,920 DMA submissions over 131.985 modeled seconds**, with **±8 ms timing jitter** and a 48 kHz output consumer:
+
+| Measurement | Previous feedback | Corrected feedback |
+| --- | ---: | ---: |
+| Stale-audio cuts | 146 | 0 |
+| Output audio skipped | 447,463 frames / 9.322 seconds | 0 |
+| Peak queue | 111.875 ms | 43.396 ms |
+| Modeled ring gaps | 0 | 0 |
+| Capacity overflows or invalid synthesis lengths | 0 | 0 |
+
+A separate original-code Nagano event test included four deliberate 50 ms production stalls. It retained four gaps totaling 159 ms, with no catch-up cuts or overflows. The correction does not conceal a real missed production deadline. BattleTanx's original-code comparison with a 300 ms consumer interruption reduced modeled gaps from 17.617 ms to zero; that long interruption still required stale-audio removal. A separate campaign run reached the first battle, executed drive/fire input and exited normally.
+
+**Nagano quality and measurements:** fixed Performance 1× and Balanced 2× modes now separate internal rendering resolution from fullscreen display size. Match window remains available. The full 4:3 display fit, original pacing, shaders and framebuffer readback are preserved. Nagano now supports the shared Performance panel and 30-second captures. Its per-game 1× preference persisted through a browser reload; the temporary test override was restored afterward.
+
+Nagano and BattleTanx audio diagnostics now include the count of stale-audio cuts, the largest individual cut and the longest contiguous ring underrun. Quiet performance samples omit full logs and worker stacks; complete session reports retain them. Fixed-name application assets request cache revalidation, and the new native builds have distinct versioned script, worker and Wasm URLs.
+
+The integrated root/shared/Nagano JavaScript suites passed **67 tests**. Both rebuilt browser Wasm files and their required exports were verified against recorded source and artifact fingerprints. Deterministic queue/worklet tests cover timing jitter, smooth-timing equivalence, safe bounds, partial acceptance, flushes and cursor wrap. The source archives include the updated implementations, tests and provenance.
+
+These results establish a controlled audio-feedback improvement. They do **not** establish audible output on a physical device, a rendered FPS gain, full campaign/event completion, or resolution of Nagano's separately reported memory-access crash. Secure-origin WebGPU rendering and listening remain to be checked on capable browser hardware.
+
 ### Player update 1.3.0
 
 **Player polish:** fullscreen controls now overlay the game and hide during play, with pointer and Tab access to reveal them. Settings is available inside the player, **Return to game** restores keyboard focus, and library-card updates preserve keyboard selection. Both BattleTanx games support a saved quality override in addition to the library default.
 
 A real Rugrats browser session verified a **1,363 × 936** fullscreen viewport with a complete **1,248 × 936** 4:3 canvas, using the available height. Control hiding/reveal, Tab access, pause/resume, Settings and return-to-game focus were exercised. This validates the shared layout and interactions; it does not establish native WebGPU performance.
 
-**Session evidence:** the new opt-in Performance panel offers local 30-second captures, the latest comparison per quality and JSON report export. Missing readings remain distinct from measured zero values. The host and BattleTanx adapters retain the first fatal state, and the last crash report remains available after restarting. Live native metrics currently cover the two BattleTanx engines; the other games retain their session-report path.
+**Session evidence:** the new opt-in Performance panel offers local 30-second captures, the latest comparison per quality and JSON report export. Missing readings remain distinct from measured zero values. The host and BattleTanx adapters retain the first fatal state, and the last crash report remains available after restarting. In that release, live native metrics covered the two BattleTanx engines; Nagano support was added in 1.3.1.
 
 The real player completed a 30-second recorder test using a temporary module clearly labeled as synthetic game data, with actual browser scheduling observations. Its comparison and crash report survived reload; the temporary module was removed before publication. The root/shared suites passed all 53 tests. The browser automation could not retrieve the exported download, so browser export retrieval remains unverified in this environment. These checks do not establish native WebGPU or audible-device performance.
 
@@ -199,15 +223,14 @@ Detailed build evidence, source provenance, and known limitations are available 
 
 ## Next native performance work
 
-The next engine work is prioritized by the evidence needed to identify and remove a real bottleneck. These changes are planned work, not optimizations included in 1.3.0.
+The pinned toolchain and native dependencies were recovered for 1.3.1, with regenerated original CPU/RSP code, rebuilt engines and recorded provenance. The audio-backlog correction is complete. The remaining priorities below require further measurement and implementation; they are not claimed as optimizations already delivered.
 
 | Priority | Area and responsibility | Gate before accepting a change |
 | --- | --- | --- |
-| 1 | **Native build baseline:** recover the pinned toolchain, dependencies and generated CPU/RSP source. | Reproduce the current engine and its execution, audio and save checks with recorded provenance. The restored working checkout does not currently include that native build environment. |
-| 2 | **Runtime and rendering measurements:** distinguish game CPU, audio RSP execution, renderer work, main-thread proxy waits, GPU execution and framebuffer readback. | Profile a repeatable hardware session with bounded measurement overhead. Current outer renderer timings include waits and cannot attribute their cost to one stage. |
-| 3 | **Audio adapter allocation:** evaluate reusing conversion and resampling scratch capacity. | Establish buffer/thread ownership and lifetime, preserve exact PCM and stream phase across DMA boundaries and sample-rate changes, then compare scheduler and device playback behavior. |
-| 4 | **Renderer and platform work:** optimize the stage the trace identifies, such as command batching, uploads, proxy traffic or readback. | Preserve resource ownership, ordering, original pacing and CPU-visible framebuffer effects. Removing readback globally is not an accepted shortcut. |
-| 5 | **Renderer and player quality controls:** consider live quality changes, then adaptive resolution. | Add a safe native update/resource-retirement contract first. The current engine locks quality at startup. Adaptation needs a relevant measured signal, stable transitions and a manual override. |
+| 1 | **Runtime and rendering measurements:** distinguish game CPU, audio RSP execution, renderer work, main-thread proxy waits, GPU execution and framebuffer readback. | Profile a repeatable hardware session with bounded measurement overhead. Current outer renderer timings include waits and cannot attribute their cost to one stage. |
+| 2 | **Audio adapter allocation:** evaluate reusing conversion and resampling scratch capacity. | Establish buffer/thread ownership and lifetime, preserve exact PCM and stream phase across DMA boundaries and sample-rate changes, then compare scheduler and device playback behavior. |
+| 3 | **Renderer and platform work:** optimize the stage the trace identifies, such as command batching, uploads, proxy traffic or readback. | Preserve resource ownership, ordering, original pacing and CPU-visible framebuffer effects. |
+| 4 | **Renderer and player quality controls:** consider live quality changes, then adaptive resolution. | Add a safe native update/resource-retirement contract first. The current engine locks quality at startup. Adaptation needs a relevant measured signal, stable transitions and a manual override. |
 
 A frame-rate claim will also need a defined presentation observation method. Original simulation ticks, completed game renders, GPU completion and images actually displayed are different stages. VI callbacks, browser animation callbacks and display-list counts alone cannot establish presented FPS.
 
