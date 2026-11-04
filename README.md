@@ -4,7 +4,7 @@
 
 Source64 brings individual N64 browser ports into a shared player. Select a game, load its required game data, play, and return to the collection without leaving the application. The interface is branded **64 / Source**.
 
-The hosted library currently requires authorized account access. A public GitHub README does not grant access to the hosted application.
+The hosted library is publicly usable at **[source64.dev](https://source64.dev/)**. Matching original game files are selected locally in the browser and are not uploaded to a game server.
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
@@ -13,6 +13,8 @@ Current player release: **1.3.1**.
 ## About this repository
 
 This is the documentation-only home for Source64. It contains **README.md only**. Application code, compiled engines, game data, ROMs, save files, and build artifacts are maintained outside this repository.
+
+The shared Source64 player/runner is distributed as the compiled browser application, but its combined source archive is not published. The game decompilations and port-specific source packages remain available for inspection: each game entry links its source package, and the related public repositories are listed below. Browser-delivered JavaScript and WebAssembly can still be downloaded and inspected; this boundary concerns publication of the maintained runner source, not an impossible claim that browser code is secret.
 
 ## Game collection
 
@@ -45,13 +47,13 @@ Each game runs in its own same-origin frame, with its own engine, audio, workers
 
 ## Hosted library
 
-The current private player is deployed to **Azure Static Web Apps Free**:
+The public player is deployed to **Azure Static Web Apps Free**:
 
-**[Open Source64](https://polite-mushroom-0aadeea10.4.azurestaticapps.net/)**
+**[Open Source64](https://source64.dev/)**
 
-Sign in with the authorized **TheGh0stShip** GitHub account. Application files require the `source64_owner` website role; an arbitrary signed-in account is not granted that role. The generated Azure address contains no personal name. A custom domain will be documented after registration, DNS validation, and HTTPS activation are complete.
+No Azure or GitHub sign-in is required to open and use the player. The application shell, game engines, and per-game source packages are publicly retrievable; original game files remain user-supplied and local to the browser.
 
-The Azure deployment preserves the same-origin game frames and the isolation headers required by the threaded engines. Live checks on November 4, 2026 confirmed anonymous requests could not retrieve the library, Nagano/BattleTanx Wasm files, or Rugrats assets; owner access succeeded; and Rugrats launched and returned to the library with origin isolation enabled. WebGPU gameplay could not be verified in the cloud test browser because it could not obtain a GPU adapter. Hosting migration does not itself establish an audio or FPS improvement.
+The Azure deployment preserves the same-origin game frames and the isolation headers required by the threaded engines. Live checks on November 4, 2026 confirmed valid HTTPS for `source64.dev`, public access to the library and all four engine files, correct WebAssembly MIME types, downloadable per-game source packages, and `same-origin` / `require-corp` isolation headers. The deployed engine hashes match the tested release artifacts. WebGPU gameplay could not be verified in the cloud test browser because it could not obtain a GPU adapter. Hosting migration does not itself establish an audio or FPS improvement.
 
 **Saves and remembered game files belong to their browser origin.** Before switching addresses, export supported saves from the previous installation and import them into the matching game on the new address. Remembered game files and preferences do not transfer automatically. Rugrats currently has no persistent save export.
 
@@ -231,7 +233,7 @@ Nagano's audio scheduler now receives the remaining length of the active audio D
 
 A Nagano worker memory-access crash has been reported. The build preserves the worker's original WebAssembly stack, thread details, and function offsets; the cause of that crash remains under investigation. The audio and display corrections do not establish that this separate crash is resolved.
 
-Detailed build evidence, source provenance, and known limitations are available through the application's integration guide and build report. The latest downloadable runtime sources and their dependency notices are maintained with the application.
+Detailed build evidence, source provenance, and known limitations are available through the application's integration guide and build report. The latest downloadable game-port sources and their dependency notices are linked from the application.
 
 ## Next native performance work
 
@@ -246,7 +248,7 @@ The pinned toolchain and native dependencies were recovered for 1.3.1, with rege
 
 A frame-rate claim will also need a defined presentation observation method. Original simulation ticks, completed game renders, GPU completion and images actually displayed are different stages. VI callbacks, browser animation callbacks and display-list counts alone cannot establish presented FPS.
 
-The detailed performance roadmap, measurements and acceptance criteria are maintained with the hosted application's build evidence. The hosted pages require authorized access. This public repository continues to contain documentation only.
+The detailed performance roadmap, measurements and acceptance criteria are maintained with the application's build evidence. The public player links the inspectable per-game source packages. This public repository continues to contain documentation only.
 
 ## Related decompilation projects
 
