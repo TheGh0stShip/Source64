@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.3.1**.
+Current player release: **1.4.0**.
 
 ## About this repository
 
@@ -158,6 +158,16 @@ The application's **Game integration guide** documents package metadata, loading
 The shared library and Rugrats startup, input, pause/resume, and return flow have been exercised in a browser. Scripted execution of the original BattleTanx and Global Assault programs reaches campaign gameplay. Nagano's original menus and event code have passed CPU/RSP checks, including a correction for executable event overlays delivered in chunks.
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
+
+### Player update 1.4.0
+
+The shared player releases redundant remembered-ROM buffers after a successful browser-storage write and reuses the active title's buffer when relaunching it. This avoids retaining up to 28 MiB of duplicate map entries for the three included ROM-based games after returning to the library. Unremembered files and failed-storage fallbacks remain usable for the current page. This is buffer accounting, not a measured game-FPS improvement.
+
+File loading shows reading, checksum verification, and remembering phases. Cancelling or replacing a file dialog prevents an older request from launching the wrong game. Connection and first-frame timeouts retain their failure report; late status messages cannot revive the session. Browser-cache recovery cancels abandoned game switches, and unconfirmed shutdowns visibly warn that a save flush was not confirmed.
+
+Expired diagnostic replies are discarded before logging or replacing newer evidence. Failed samples clear live values while keeping the last snapshot available in reports; captures exclude requests begun before recording. Imported-build replacements now explicitly abort on a synchronous storage failure, preserving the previous installation.
+
+The integrated JavaScript suite passes **129 tests**, and all **10 Azure packaging tests** pass. Local Chromium acceptance verified Rugrats startup, pause/resume, Settings and return through its Canvas2D fallback, plus actual download-and-inspect checks for a synthetic save and crash report. Software WebGL automation stalled, so hardware rendering and physical listening remain unverified. The four native engines, original timing, audio policies, and per-game source packages are unchanged by this player release. Nagano's separately reported browser memory-access crash remains unresolved.
 
 ### Player update 1.3.1
 
