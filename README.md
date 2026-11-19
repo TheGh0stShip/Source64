@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.4.0**.
+Current player release: **1.5.0**.
 
 ## About this repository
 
@@ -24,6 +24,7 @@ The shared Source64 player/runner is distributed as the compiled browser applica
 | Nagano Winter Olympics ’98 | Ahead-of-time recompilation using the matching decompilation metadata, including the original event overlays and audio microcode; WebGPU. | Matching USA game file, 12 MiB. |
 | BattleTanx | Ahead-of-time compilation of the original 1,738-function resident program and audio microcode; WebGPU. | Matching USA game file, 8 MiB. |
 | BattleTanx: Global Assault | Ahead-of-time compilation of the original 1,879-function catalogue, with the native port's compatibility adaptations; WebGPU. | Matching USA game file, 8 MiB. |
+| Wheel of Fortune | Ahead-of-time compilation using the complete matching 775-function catalogue and original audio microcode; WebGPU. | Matching USA game file, 4 MiB. |
 
 The library also displays these clearly labeled **work-in-progress placeholders**. They are not playable browser builds yet:
 
@@ -33,7 +34,7 @@ The library also displays these clearly labeled **work-in-progress placeholders*
 | Sydney 2000 (Prototype) | Prototype decompilation in progress. The recovered image is a `.bin`, not a standard `.z64`; it is not hosted by Source64. | [Sydney-2000-N64-Prototype](https://github.com/TheGh0stShip/Sydney-2000-N64-Prototype) |
 | Superman: The New Superman Adventures | Decompilation in progress; browser engine and input requirements are not established. | [Superman-64](https://github.com/TheGh0stShip/Superman-64) |
 
-These implementation paths are deliberately identified separately. Rugrats compiles recovered C directly; the other three translate the original program ahead of time into compiled browser code. Source64 does not include a generic runtime N64 CPU interpreter, and selecting an arbitrary ROM does not create a new browser port.
+These implementation paths are deliberately identified separately. Rugrats compiles recovered C directly; the other four translate the original program ahead of time into compiled browser code. Source64 does not include a generic runtime N64 CPU interpreter, and selecting an arbitrary ROM does not create a new browser port.
 
 The primary BattleTanx entry uses the original program's complete resident catalogue. It retains the original menus, campaign, intermissions, and multiplayer functions. The extent of playtesting is documented separately from the amount of code included.
 
@@ -42,12 +43,12 @@ The primary BattleTanx entry uses the original program's complete resident catal
 - One collection and one active game at a time, with in-place loading and return to the library.
 - Search, collection sorting, recently played history, and per-game details, with stable keyboard focus as library cards update.
 - Keyboard and standard gamepad support, with control guides for each title.
-- Hold-to-repeat A/B on the standard controller's X/Y buttons in all four included games.
+- Hold-to-repeat A/B on the standard controller's X/Y buttons in all five included games.
 - Fullscreen play with controls that overlay the picture and hide during play.
 - In-player **Settings**, **Return to game**, mute, restart, and host pause where the engine implements it.
 - Per-game save storage and supported save import/export.
-- Rendering-quality defaults and per-game overrides for Nagano and both BattleTanx games, with Balanced 2× as the default.
-- An opt-in **Performance** panel, local 30-second captures and quality comparisons for Nagano and both BattleTanx games.
+- Rendering-quality defaults and per-game overrides for Nagano, both BattleTanx games, and Wheel of Fortune, with Balanced 2× as the default.
+- An opt-in **Performance** panel, local 30-second captures and quality comparisons for Nagano, both BattleTanx games, and Wheel of Fortune.
 - Downloadable session logs and JSON reports, with the last crash report retained separately from a restarted session.
 - Optional browser-local storage for remembered original game files.
 
@@ -75,7 +76,7 @@ The Azure deployment preserves the same-origin game frames and the isolation hea
 
 The loader accepts uncompressed **.z64, .n64, and .v64** files, normalizes their byte order, and checks the full file against the expected size and SHA-1. Files selected in the player stay in the browser; the player does not upload them to a game server.
 
-Nagano and both BattleTanx builds require **HTTPS, WebGPU, WebAssembly threads, and cross-origin isolation**. These builds initially reserve 1 GiB of WebAssembly memory. Rugrats has a lighter engine and a software graphics fallback. Mobile support and performance are not established.
+Nagano, both BattleTanx builds, and Wheel of Fortune require **HTTPS, WebGPU, WebAssembly threads, and cross-origin isolation**. These builds initially reserve 1 GiB of WebAssembly memory. Rugrats has a lighter engine and a software graphics fallback. Mobile support and performance are not established.
 
 The original games use a 4:3 picture. Fullscreen preserves that ratio, so widescreen displays can have side bars. The original game may also draw its own borders. Use the game's **Start** button for pause when the shared Pause control is unavailable.
 
@@ -87,7 +88,7 @@ The controls remain available while using shared-player pause, an open dialog or
 
 ## Rendering quality and performance
 
-For **Nagano Winter Olympics ’98**, **BattleTanx** and **BattleTanx: Global Assault**, open **Settings** from the library or the active player. **Default rendering quality** sets the library preference. **This game's quality** can override it for the selected or active supported game; choose **Use default** to follow the library preference again.
+For **Nagano Winter Olympics ’98**, **BattleTanx** and **BattleTanx: Global Assault**, and **Wheel of Fortune**, open **Settings** from the library or the active player. **Default rendering quality** sets the library preference. **This game's quality** can override it for the selected or active supported game; choose **Use default** to follow the library preference again.
 
 | Setting | Internal rendering | Use |
 | --- | --- | --- |
@@ -95,13 +96,13 @@ For **Nagano Winter Olympics ’98**, **BattleTanx** and **BattleTanx: Global As
 | **Balanced · 2×** | Fixed double resolution scale; the default. | More detail with a bounded rendering workload. |
 | **Match window** | Integer scale based on the game canvas. | A sharper image in larger windows, with more GPU work as the scale increases. |
 
-All modes keep the picture fitted to the available 4:3 game area. Selecting 1× does not make the game window smaller. Preferences are kept in this browser, and changes apply when the game next starts or restarts. The player distinguishes the saved preference from the quality currently running. These settings currently affect Nagano and both BattleTanx modules.
+All modes keep the picture fitted to the available 4:3 game area. Selecting 1× does not make the game window smaller. Preferences are kept in this browser, and changes apply when the game next starts or restarts. The player distinguishes the saved preference from the quality currently running. These settings currently affect Nagano, both BattleTanx modules, and Wheel of Fortune.
 
 The original game timing, original renderer frame pacing, and framebuffer data returned to the game are preserved. Lower internal resolution can help a GPU-limited session maintain the game's intended cadence; it is not a game-speed unlock. A rendered FPS gain has not yet been measured on browser/GPU hardware.
 
 ### Performance panel and local captures
 
-Nagano and both BattleTanx games provide live native measurements through **Performance** in the player. The panel separates completed renderer calls and their mean duration, game-audio queue depth and ring gaps, browser callback intervals, and optional browser output gaps. **Rugrats currently provides session reports without these live native measurements in the panel.**
+Nagano, both BattleTanx games, and Wheel of Fortune provide live native measurements through **Performance** in the player. The panel separates completed renderer calls and their mean duration, game-audio queue depth and ring gaps, browser callback intervals, and optional browser output gaps. **Rugrats currently provides session reports without these live native measurements in the panel.**
 
 Sampling is opt-in: it runs approximately once per second while the panel is open or a recording is active, and stops when it is no longer needed. Choose **Record 30 seconds** during a repeatable scene. Closing the panel lets an active recording continue; hiding the page or ending the playing session finishes it with the appropriate reason. Captures and comparisons stay in this browser.
 
@@ -119,7 +120,7 @@ A separate **Last crash report** in the library retains the latest failure repor
 
 ## Turbo controls
 
-All four included games support these standard-controller bindings:
+All five included games support these standard-controller bindings:
 
 | Controller input | N64 action |
 | --- | --- |
@@ -140,6 +141,7 @@ These are **controller** X/Y bindings. Keyboard controls remain game-specific an
 | Nagano Winter Olympics ’98 | Game-specific **.npak** format, with validated import/export. |
 | BattleTanx | Player-one raw **32 KiB .mpk** Controller Pak, with validated import/export. |
 | BattleTanx: Global Assault | Player-one raw **32 KiB .mpk** Controller Pak, with validated import/export. |
+| Wheel of Fortune | Separate player-one raw **32 KiB .mpk** Controller Pak, with validated import/export. |
 
 Save namespaces are separate. Imported saves are validated before being applied; a module restart is used where required. Browser storage is local to that browser and site address. Saves from earlier standalone game sites do not automatically migrate to Source64; use export/import where the previous build supports it.
 
@@ -158,6 +160,18 @@ The application's **Game integration guide** documents package metadata, loading
 The shared library and Rugrats startup, input, pause/resume, and return flow have been exercised in a browser. Scripted execution of the original BattleTanx and Global Assault programs reaches campaign gameplay. Nagano's original menus and event code have passed CPU/RSP checks, including a correction for executable event overlays delivered in chunks.
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
+
+### Player update 1.5.0 — Wheel of Fortune
+
+Wheel of Fortune joins the existing shared library as the fifth playable title. It uses the current matching decompilation at revision `1f98298869d080147d605f0981d3f7422086bb86`: 775 verified source entries covering 402,772 original code bytes. Original CPU code and audio microcode are compiled ahead of time. Browser adaptations preserve the original polling conditions and read the cartridge puzzle table from the locally supplied ROM.
+
+A Windows Edge 157 run on an Intel Gen-12LP WebGPU adapter rendered the intro, player setup, a puzzle round, wheel spins and letter selection. The last sample at 65.884 seconds recorded 3,980 VI callbacks and 2,376 display-list submissions. These counters are not presented FPS. A separate 45.001-second CPU/RSP fixture recorded 2,099 counted display lists and nonzero audio output; its renderer discarded graphics.
+
+Browser lifecycle checks imported a formatted 32 KiB QA Pak, restarted the native engine, downloaded an identical export, explicitly restarted again, and returned to the library. This establishes the player storage path, not all original in-game save menus. The full JavaScript gate passes 131 tests; the 10 Azure packaging tests pass. All 29 existing engine, worker and adapter files remain byte-identical to release 1.4.0.
+
+Production HTTPS checks matched all 263 served release files, including isolation headers and Wasm MIME. A separate live-domain WebGPU run passed gameplay, the Pak round trip, explicit restart, clean return and an actual browser-source ZIP download; all 906 archive entries were inspected.
+
+Audio underruns and stale-audio trims occurred during the hardware run, which included cold loading and shader compilation. Physical listening, steady-state audio attribution, complete games and physical multiplayer remain unverified. Nagano's separately reported memory-access crash remains unresolved. Matching decompilation and browser-engine source remain inspectable; original game files and saves are excluded from publication.
 
 ### Player update 1.4.0
 
@@ -275,6 +289,7 @@ The detailed performance roadmap, measurements and acceptance criteria are maint
 - [BattleTanx](https://github.com/TheGh0stShip/BattleTanx)
 - [BattleTanx: Global Assault](https://github.com/TheGh0stShip/BattleTanx-Global-Assault)
 - [BattleTanx: Global Assault PC port](https://github.com/TheGh0stShip/BattleTanx-Global-Assault-PC-Port)
+- [Wheel of Fortune](https://github.com/TheGh0stShip/Wheel-of-Fortune-N64)
 - [Madden Football 64](https://github.com/TheGh0stShip/Madden-64)
 - [Sydney 2000 N64 Prototype](https://github.com/TheGh0stShip/Sydney-2000-N64-Prototype)
 - [Superman: The New Superman Adventures](https://github.com/TheGh0stShip/Superman-64)
@@ -284,4 +299,5 @@ Original game code, assets, names, and trademarks remain with their respective r
 ---
 
 **Documentation maintained by TheGh0stShip.** This README is updated alongside Source64's browser releases; this repository remains documentation-only.
+
 
