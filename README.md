@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.5.0**.
+Current player release: **1.5.1**.
 
 ## About this repository
 
@@ -20,7 +20,7 @@ The shared Source64 player/runner is distributed as the compiled browser applica
 
 | Game | Browser implementation | Original game data |
 | --- | --- | --- |
-| Rugrats: Scavenger Hunt | Decompiled C compiled directly to WebAssembly; WebGL2 with a software fallback. | The existing browser port's packaged data is included. |
+| Rugrats: Scavenger Hunt | Decompiled C compiled directly to WebAssembly; WebGL2 with a software fallback. | Matching USA game file, 16 MiB; data is prepared locally. |
 | Nagano Winter Olympics ’98 | Ahead-of-time recompilation using the matching decompilation metadata, including the original event overlays and audio microcode; WebGPU. | Matching USA game file, 12 MiB. |
 | BattleTanx | Ahead-of-time compilation of the original 1,738-function resident program and audio microcode; WebGPU. | Matching USA game file, 8 MiB. |
 | BattleTanx: Global Assault | Ahead-of-time compilation of the original 1,879-function catalogue, with the native port's compatibility adaptations; WebGPU. | Matching USA game file, 8 MiB. |
@@ -161,6 +161,16 @@ The shared library and Rugrats startup, input, pause/resume, and return flow hav
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
 
+### Player update 1.5.1 — local Rugrats data
+
+Rugrats now follows the library's local-file workflow. It verifies the matching 16 MiB USA file, normalizes .z64/.n64/.v64 byte order, removes the pinned 1,270 CPU-function ranges in browser memory and verifies the result against the exact data expected by the existing engine. Gameplay still executes in the same decompiled-C WebAssembly binary. No runtime ROM CPU interpreter or replacement emulator was added.
+
+The hosted 16 MiB game-data image and its duplicate in the downloadable ZIP are removed. The Rugrats download now contains corresponding source only. All public source ZIPs, including nested archives, are checked for game data and compiled payloads. The sole permitted loose binary data file is Rugrats' exact 1,744-byte compiler-generated C globals, checked by hash.
+
+The JavaScript gate passes 140 tests and the Azure packaging suite passes 13. Real local-ROM verification in all three byte orders produces exactly the original engine data without modifying the input. Fresh browser and mobile-sized contexts require local data; invalid input cannot mount the engine. Canvas2D browser checks exercise rendering, pause/resume, fresh-frame restart and return. All five game-engine Wasm binaries remain byte-identical.
+
+The 10,000-tick original-C fixtures pass modes 0 and 1. Mode 2 hits a null data pointer at tick 8,082; the legacy data reproduces the same fault at the same tick. That existing native issue remains separate from the data-loading correction. Physical iPhone Safari gameplay, physical audio/controllers and full-game completion are not established by these checks.
+
 ### Player update 1.5.0 — Wheel of Fortune
 
 Wheel of Fortune joins the existing shared library as the fifth playable title. It uses the current matching decompilation at revision `1f98298869d080147d605f0981d3f7422086bb86`: 775 verified source entries covering 402,772 original code bytes. Original CPU code and audio microcode are compiled ahead of time. Browser adaptations preserve the original polling conditions and read the cartridge puzzle table from the locally supplied ROM.
@@ -299,5 +309,3 @@ Original game code, assets, names, and trademarks remain with their respective r
 ---
 
 **Documentation maintained by TheGh0stShip.** This README is updated alongside Source64's browser releases; this repository remains documentation-only.
-
-
