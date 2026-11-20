@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.6.0**.
+Current player release: **1.6.1**.
 
 ## About this repository
 
@@ -162,6 +162,24 @@ The application's **Game integration guide** documents package metadata, loading
 The shared library and Rugrats startup, input, pause/resume, and return flow have been exercised in a browser. Scripted execution of the original BattleTanx and Global Assault programs reaches campaign gameplay. Nagano's original menus and event code have passed CPU/RSP checks, including a correction for executable event overlays delivered in chunks.
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
+
+### Player update 1.6.1 — Elmo audio pacing
+
+Both Elmo modules now restore the original two-slot audio FIFO admission
+signal. The shared runtime had always reported ready, so these games produced
+sound faster than playback and repeatedly discarded queued speech. The fix
+preserves original clocks, source rates, synthesis and resampling. Other titles
+retain their existing audio policies.
+
+Original CPU/RSP comparisons at 22,050 Hz playback reduced accumulated audio
+from over 10 seconds to a peak below 59 ms. Hardware WebGPU checks recorded
+zero stale-audio trimming, with gameplay, restart and return still working.
+Brief audio underruns remain; physical listening and exact speech/animation
+sync on every device have not been established. These are audio queue results,
+not presented-FPS measurements.
+
+The integrated gate passes 147 tests with no skips, plus 13 Azure packaging
+tests. All 369 served production files match the release package.
 
 ### Player update 1.6.0 — Sesame Street games
 
