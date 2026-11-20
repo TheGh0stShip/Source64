@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.5.1**.
+Current player release: **1.5.2**.
 
 ## About this repository
 
@@ -161,6 +161,12 @@ The shared library and Rugrats startup, input, pause/resume, and return flow hav
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
 
+### Player update 1.5.2 — Rugrats board-renderer correction
+
+Rugrats mode 2 now follows the original game’s renderer call and return path for every room. The recovered C had placed that shared path inside the room-zero branch; later rooms could fall through into another mode’s object-list renderer with a null list. The correction restores the original branches and retains null-pointer checks.
+
+Rebuilding the unmodified pinned C reproduced the previous Wasm byte for byte. The corrected build changes only the board-renderer function body; compiler constants and verified local game-data preparation remain identical. The regression fails against the old engine at the original room-2 checkpoint, then passes with the correction and progresses through rooms 0, 1 and 2 and all four player turn indices. Modes 0 and 1 also pass their original-code fixtures. The downloadable corresponding-source archive includes the repair and regression. The integrated JavaScript gate passes 141 tests and all 13 Azure packaging checks pass.
+
 ### Player update 1.5.1 — local Rugrats data
 
 Rugrats now follows the library's local-file workflow. It verifies the matching 16 MiB USA file, normalizes .z64/.n64/.v64 byte order, removes the pinned 1,270 CPU-function ranges in browser memory and verifies the result against the exact data expected by the existing engine. Gameplay still executes in the same decompiled-C WebAssembly binary. No runtime ROM CPU interpreter or replacement emulator was added.
@@ -169,7 +175,7 @@ The hosted 16 MiB game-data image and its duplicate in the downloadable ZIP are 
 
 The JavaScript gate passes 140 tests and the Azure packaging suite passes 13. Real local-ROM verification in all three byte orders produces exactly the original engine data without modifying the input. Fresh browser and mobile-sized contexts require local data; invalid input cannot mount the engine. Canvas2D browser checks exercise rendering, pause/resume, fresh-frame restart and return. All five game-engine Wasm binaries remain byte-identical.
 
-The 10,000-tick original-C fixtures pass modes 0 and 1. Mode 2 hits a null data pointer at tick 8,082; the legacy data reproduces the same fault at the same tick. That existing native issue remains separate from the data-loading correction. Physical iPhone Safari gameplay, physical audio/controllers and full-game completion are not established by these checks.
+The 10,000-tick original-C fixtures pass modes 0 and 1. Mode 2 hits a null data pointer at tick 8,082; the legacy data reproduces the same fault at the same tick. That issue was traced to recovered C control flow and fixed in 1.5.2, as described above; these observations preserve the 1.5.1 baseline. Physical iPhone Safari gameplay, physical audio/controllers and full-game completion are not established by these checks.
 
 ### Player update 1.5.0 — Wheel of Fortune
 
