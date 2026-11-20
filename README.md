@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.5.2**.
+Current player release: **1.6.0**.
 
 ## About this repository
 
@@ -25,6 +25,8 @@ The shared Source64 player/runner is distributed as the compiled browser applica
 | BattleTanx | Ahead-of-time compilation of the original 1,738-function resident program and audio microcode; WebGPU. | Matching USA game file, 8 MiB. |
 | BattleTanx: Global Assault | Ahead-of-time compilation of the original 1,879-function catalogue, with the native port's compatibility adaptations; WebGPU. | Matching USA game file, 8 MiB. |
 | Wheel of Fortune | Ahead-of-time compilation using the complete matching 775-function catalogue and original audio microcode; WebGPU. | Matching USA game file, 4 MiB. |
+| Sesame Street: Elmo’s Number Journey | Ahead-of-time compilation using the complete matching 973-function catalogue and original audio microcode; WebGPU. | Matching USA game file, 8 MiB. |
+| Sesame Street: Elmo’s Letter Adventure | Ahead-of-time compilation using the complete matching 964-function catalogue and original audio microcode; WebGPU. | Matching USA game file, 8 MiB. |
 
 The library also displays these clearly labeled **work-in-progress placeholders**. They are not playable browser builds yet:
 
@@ -34,7 +36,7 @@ The library also displays these clearly labeled **work-in-progress placeholders*
 | Sydney 2000 (Prototype) | Prototype decompilation in progress. The recovered image is a `.bin`, not a standard `.z64`; it is not hosted by Source64. | [Sydney-2000-N64-Prototype](https://github.com/TheGh0stShip/Sydney-2000-N64-Prototype) |
 | Superman: The New Superman Adventures | Decompilation in progress; browser engine and input requirements are not established. | [Superman-64](https://github.com/TheGh0stShip/Superman-64) |
 
-These implementation paths are deliberately identified separately. Rugrats compiles recovered C directly; the other four translate the original program ahead of time into compiled browser code. Source64 does not include a generic runtime N64 CPU interpreter, and selecting an arbitrary ROM does not create a new browser port.
+These implementation paths are deliberately identified separately. Rugrats compiles recovered C directly; the other six translate the original program ahead of time into compiled browser code. Source64 does not include a generic runtime N64 CPU interpreter, and selecting an arbitrary ROM does not create a new browser port.
 
 The primary BattleTanx entry uses the original program's complete resident catalogue. It retains the original menus, campaign, intermissions, and multiplayer functions. The extent of playtesting is documented separately from the amount of code included.
 
@@ -43,7 +45,7 @@ The primary BattleTanx entry uses the original program's complete resident catal
 - One collection and one active game at a time, with in-place loading and return to the library.
 - Search, collection sorting, recently played history, and per-game details, with stable keyboard focus as library cards update.
 - Keyboard and standard gamepad support, with control guides for each title.
-- Hold-to-repeat A/B on the standard controller's X/Y buttons in all five included games.
+- Hold-to-repeat A/B on the standard controller's X/Y buttons in all seven included games.
 - Fullscreen play with controls that overlay the picture and hide during play.
 - In-player **Settings**, **Return to game**, mute, restart, and host pause where the engine implements it.
 - Per-game save storage and supported save import/export.
@@ -120,7 +122,7 @@ A separate **Last crash report** in the library retains the latest failure repor
 
 ## Turbo controls
 
-All five included games support these standard-controller bindings:
+All seven included games support these standard-controller bindings:
 
 | Controller input | N64 action |
 | --- | --- |
@@ -160,6 +162,14 @@ The application's **Game integration guide** documents package metadata, loading
 The shared library and Rugrats startup, input, pause/resume, and return flow have been exercised in a browser. Scripted execution of the original BattleTanx and Global Assault programs reaches campaign gameplay. Nagano's original menus and event code have passed CPU/RSP checks, including a correction for executable event overlays delivered in chunks.
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
+
+### Player update 1.6.0 — Sesame Street games
+
+**Elmo’s Number Journey** and **Elmo’s Letter Adventure** are now playable in the existing Source64 player. Each uses its own verified local 8 MiB USA game file and its own engine/storage namespace. Their completed matching inventories cover 973 functions / 444,672 executable bytes and 964 functions / 438,160 bytes respectively. CPU programs and original audio microcode compile ahead of time; no runtime N64 CPU interpreter or hosted game media is added.
+
+Hardware WebGPU runs on an Intel adapter rendered title screens, difficulty selection and the initial 3D Sesame Street areas for both games. Keyboard input, native restart and return to the library were checked. The speech adaptations match 356 original-instruction cases per game byte for byte, and the shared-tail unsigned compare matches 337 edge/random cases. The full gate passes 145 JavaScript tests and 13 packaging tests. These checks do not establish full-game completion, physical controllers or physical listening quality.
+
+Both matching decompilations and the per-game browser-engine source packages remain inspectable. Both downloaded source archives are checked against every manifest hash; ROMs, saves and compiled engines are excluded from those ZIPs. Persistent original-game saves are not enabled for these integrations. The five prior game Wasm binaries are unchanged from 1.5.2.
 
 ### Player update 1.5.2 — Rugrats board-renderer correction
 
@@ -315,3 +325,6 @@ Original game code, assets, names, and trademarks remain with their respective r
 ---
 
 **Documentation maintained by TheGh0stShip.** This README is updated alongside Source64's browser releases; this repository remains documentation-only.
+
+- [Sesame Street: Elmo’s Number Journey](https://github.com/TheGh0stShip/Sesame-Street-Elmos-Number-Journey-N64)
+- [Sesame Street: Elmo’s Letter Adventure](https://github.com/TheGh0stShip/Sesame-Street-Elmos-Letter-Adventure-N64)
