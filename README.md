@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.6.4**.
+Current player release: **1.7.0**.
 
 ## About this repository
 
@@ -35,6 +35,7 @@ The library also displays these clearly labeled **work-in-progress placeholders*
 | Madden Football 64 | Decompilation in progress; browser engine and input requirements are not established. | [Madden-64](https://github.com/TheGh0stShip/Madden-64) |
 | Sydney 2000 (Prototype) | Prototype decompilation in progress. The recovered image is a `.bin`, not a standard `.z64`; it is not hosted by Source64. | [Sydney-2000-N64-Prototype](https://github.com/TheGh0stShip/Sydney-2000-N64-Prototype) |
 | Superman: The New Superman Adventures | Decompilation in progress; browser engine and input requirements are not established. | [Superman-64](https://github.com/TheGh0stShip/Superman-64) |
+| Jeopardy! | In-progress decompilation; no playable browser build is provided. | [Jeopardy-N64](https://github.com/TheGh0stShip/Jeopardy-N64) |
 
 These implementation paths are deliberately identified separately. Rugrats compiles recovered C directly; the other six translate the original program ahead of time into compiled browser code. Source64 does not include a generic runtime N64 CPU interpreter, and selecting an arbitrary ROM does not create a new browser port.
 
@@ -165,6 +166,18 @@ The current release evidence is summarized below; older release sections retain 
 The shared library and Rugrats startup, input, pause/resume, and return flow have been exercised in a browser. Scripted execution of the original BattleTanx and Global Assault programs reaches campaign gameplay. Nagano's original menus and event code have passed CPU/RSP checks, including a correction for executable event overlays delivered in chunks.
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
+
+### Player update 1.7.0 — audio feedback, controller menus and recovery
+
+**Jeopardy!** joins the library as an in-progress project card linking the public decompilation. It cannot launch or accept game data. There are seven playable titles and four planned projects.
+
+Wheel of Fortune now accounts for older pending DMA buffers in the browser FIFO. Feedback is converted to source frames and capped at the verified 464-frame synthesis bound; one VI of reserve in deeper queues avoids exposing every short host jitter gap. Original clocks, rates, audio microcode and resampling are retained. In counterbalanced browser runs, both reserved-feedback candidates have zero discarded queued audio after warmup, versus 11.05 seconds for the released baseline over approximately 177 seconds. Measured candidate production stays near 48,000 output frames/s rather than 50,859. Brief ring gaps remain; this is not a physical listening or FPS claim.
+
+Standard-controller menus support D-pad navigation, A/select, B/back and both stick-clicks for Settings. Menu ownership suppresses game input until held controls release, preserving controller connections and independent ports. Local file selection still uses touch, mouse or keyboard. Browser DOM and synthetic-pad checks cover disconnects, resting axes and held-button cleanup; physical-controller acceptance remains separate.
+
+WebGPU device loss now records the reason and offers manual restart with a fresh game frame. Intentional device destruction is ignored. An isolated real-browser GPU-process crash test passes failure reporting, an actual downloaded report, restart and return. Wheel’s SDL close path also quiesces its Pak writer once before quitting.
+
+The integrated gate passes **187 tests without skips**, plus **13 packaging tests**. All **373 public deployment files** match the final release package, and all seven source downloads match their expected bytes. Only Wheel’s native Wasm changes from 1.6.4. Full campaigns, every Nagano event, original-game saves for Rugrats/Elmo, live/adaptive resolution and physical listening are not established by these checks.
 
 ### Player updates 1.6.2–1.6.4 — correctness and player reliability
 
@@ -352,6 +365,7 @@ The detailed performance roadmap, measurements and acceptance criteria are maint
 - [Madden Football 64](https://github.com/TheGh0stShip/Madden-64)
 - [Sydney 2000 N64 Prototype](https://github.com/TheGh0stShip/Sydney-2000-N64-Prototype)
 - [Superman: The New Superman Adventures](https://github.com/TheGh0stShip/Superman-64)
+- [Jeopardy!](https://github.com/TheGh0stShip/Jeopardy-N64)
 
 Original game code, assets, names, and trademarks remain with their respective rights holders. Runtime and third-party components retain their own licenses and notices.
 
