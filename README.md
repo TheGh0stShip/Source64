@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.6.1**.
+Current player release: **1.6.4**.
 
 ## About this repository
 
@@ -49,8 +49,8 @@ The primary BattleTanx entry uses the original program's complete resident catal
 - Fullscreen play with controls that overlay the picture and hide during play.
 - In-player **Settings**, **Return to game**, mute, restart, and host pause where the engine implements it.
 - Per-game save storage and supported save import/export.
-- Rendering-quality defaults and per-game overrides for Nagano, both BattleTanx games, and Wheel of Fortune, with Balanced 2× as the default.
-- An opt-in **Performance** panel, local 30-second captures and quality comparisons for Nagano, both BattleTanx games, and Wheel of Fortune.
+- Rendering-quality defaults and per-game overrides for Nagano, both BattleTanx games, Wheel of Fortune and both Elmo games, with Balanced 2× as the default.
+- An opt-in **Performance** panel and local 30-second captures for all seven games; rendering-quality comparisons where supported.
 - Downloadable session logs and JSON reports, with the last crash report retained separately from a restarted session.
 - Optional browser-local storage for remembered original game files.
 
@@ -78,7 +78,7 @@ The Azure deployment preserves the same-origin game frames and the isolation hea
 
 The loader accepts uncompressed **.z64, .n64, and .v64** files, normalizes their byte order, and checks the full file against the expected size and SHA-1. Files selected in the player stay in the browser; the player does not upload them to a game server.
 
-Nagano, both BattleTanx builds, and Wheel of Fortune require **HTTPS, WebGPU, WebAssembly threads, and cross-origin isolation**. These builds initially reserve 1 GiB of WebAssembly memory. Rugrats has a lighter engine and a software graphics fallback. Mobile support and performance are not established.
+Nagano, both BattleTanx builds, Wheel of Fortune and both Elmo games require **HTTPS, WebGPU, WebAssembly threads, and cross-origin isolation**. These builds initially reserve 1 GiB of WebAssembly memory. Rugrats has a lighter engine and a software graphics fallback. Mobile support and performance are not established.
 
 The original games use a 4:3 picture. Fullscreen preserves that ratio, so widescreen displays can have side bars. The original game may also draw its own borders. Use the game's **Start** button for pause when the shared Pause control is unavailable.
 
@@ -90,7 +90,7 @@ The controls remain available while using shared-player pause, an open dialog or
 
 ## Rendering quality and performance
 
-For **Nagano Winter Olympics ’98**, **BattleTanx** and **BattleTanx: Global Assault**, and **Wheel of Fortune**, open **Settings** from the library or the active player. **Default rendering quality** sets the library preference. **This game's quality** can override it for the selected or active supported game; choose **Use default** to follow the library preference again.
+For **Nagano Winter Olympics ’98**, **BattleTanx**, **BattleTanx: Global Assault**, **Wheel of Fortune** and both **Elmo** games, open **Settings** from the library or the active player. **Default rendering quality** sets the library preference. **This game's quality** can override it for the selected or active supported game; choose **Use default** to follow the library preference again.
 
 | Setting | Internal rendering | Use |
 | --- | --- | --- |
@@ -98,13 +98,13 @@ For **Nagano Winter Olympics ’98**, **BattleTanx** and **BattleTanx: Global As
 | **Balanced · 2×** | Fixed double resolution scale; the default. | More detail with a bounded rendering workload. |
 | **Match window** | Integer scale based on the game canvas. | A sharper image in larger windows, with more GPU work as the scale increases. |
 
-All modes keep the picture fitted to the available 4:3 game area. Selecting 1× does not make the game window smaller. Preferences are kept in this browser, and changes apply when the game next starts or restarts. The player distinguishes the saved preference from the quality currently running. These settings currently affect Nagano, both BattleTanx modules, and Wheel of Fortune.
+All modes keep the picture fitted to the available 4:3 game area. Selecting 1× does not make the game window smaller. Preferences are kept in this browser, and changes apply when the game next starts or restarts. The player distinguishes the saved preference from the quality currently running. These settings affect the six WebGPU modules; Rugrats retains its own renderer.
 
 The original game timing, original renderer frame pacing, and framebuffer data returned to the game are preserved. Lower internal resolution can help a GPU-limited session maintain the game's intended cadence; it is not a game-speed unlock. A rendered FPS gain has not yet been measured on browser/GPU hardware.
 
 ### Performance panel and local captures
 
-Nagano, both BattleTanx games, and Wheel of Fortune provide live native measurements through **Performance** in the player. The panel separates completed renderer calls and their mean duration, game-audio queue depth and ring gaps, browser callback intervals, and optional browser output gaps. **Rugrats currently provides session reports without these live native measurements in the panel.**
+All seven games provide live measurements through **Performance**. The six WebGPU modules expose completed native renderer calls and durations, audio queues and available gap counters. Rugrats exposes measured host display-list processing and its audio queue, with unsupported native fields left unavailable. Browser callback intervals and optional browser output gaps remain separate. None of these counters is presented game FPS.
 
 Sampling is opt-in: it runs approximately once per second while the panel is open or a recording is active, and stops when it is no longer needed. Choose **Record 30 seconds** during a repeatable scene. Closing the panel lets an active recording continue; hiding the page or ending the playing session finishes it with the appropriate reason. Captures and comparisons stay in this browser.
 
@@ -133,13 +133,14 @@ All seven included games support these standard-controller bindings:
 
 Turbo runs while the button is held. Ordinary A/B presses remain available, including during a turbo release phase. Input clears when the game loses focus, becomes hidden, stops, or its controller disconnects. Click the game or choose **Return to game** after using the shared toolbar to restore focus.
 
-These are **controller** X/Y bindings. Keyboard controls remain game-specific and are shown in **Controllers**. Additional imported games implement their own control adapters.
+These are **controller** X/Y bindings. Keyboard controls remain game-specific and are shown in **Controllers**. Additional integrated games implement their own control adapters.
 
 ## Saves
 
 | Game | Current save support |
 | --- | --- |
 | Rugrats: Scavenger Hunt | Persistent Controller Pak support is not enabled in this build. |
+| Both Elmo titles | Original-game persistent saves are not enabled. |
 | Nagano Winter Olympics ’98 | Game-specific **.npak** format, with validated import/export. |
 | BattleTanx | Player-one raw **32 KiB .mpk** Controller Pak, with validated import/export. |
 | BattleTanx: Global Assault | Player-one raw **32 KiB .mpk** Controller Pak, with validated import/export. |
@@ -153,15 +154,29 @@ Source64 is designed to accept additional browser ports without creating another
 
 **Permanent integration:** add a compiled game module to the application's game collection, register its metadata, and connect the shared lifecycle adapter.
 
-**Local import:** choose **Add a game** and select a compiled browser folder containing its **n64-game.json** manifest. The package is installed into this browser and opens inside the same player. Imported builds execute on the library's origin, so use trusted builds.
+**Executable folder import is disabled on the public player.** Previously imported catalogue entries are ignored; installer calls are rejected and the old `/installed/` route is blocked. Existing browser data is preserved. New executable modules enter through reviewed catalogue integration and deployment.
 
 The application's **Game integration guide** documents package metadata, loading, status, controls, audio, saves, and shutdown. A ROM or decompilation repository still needs a working browser engine before it can be registered.
 
 ## Verification and current limitations
 
+The current release evidence is summarized below; older release sections retain the limits of their original checks.
+
 The shared library and Rugrats startup, input, pause/resume, and return flow have been exercised in a browser. Scripted execution of the original BattleTanx and Global Assault programs reaches campaign gameplay. Nagano's original menus and event code have passed CPU/RSP checks, including a correction for executable event overlays delivered in chunks.
 
 These checks do not establish completed campaigns, every Nagano event, physical multiplayer compatibility, every browser/GPU combination, or all original save-menu round trips. Headless execution and graphics-command checks are distinguished from rendered browser gameplay throughout the build reports.
+
+### Player updates 1.6.2–1.6.4 — correctness and player reliability
+
+Rugrats CPU search no longer retains a search location retired by another player. Original-instruction and controlled same-shell comparisons reproduce the old stall and pass with the corrected engine. Rugrats now exposes live host performance measurements; persistent original-game save export remains unsupported.
+
+Release 1.6.4 also corrects Rugrats scene cleanup ordering. A cleanup routine could redirect the scene, but the host initialized the earlier cached scene. The old long replay failed during the transition; all three corrected native modes pass 180,000 ticks each. One Wasm function body changes, with non-code sections identical.
+
+Nagano's browser memory trap was reproduced with a matching stack. Original JAL/JALR instructions update the return-address register; the pinned AOT output omitted that write, which an original routine later reads from a saved stack slot. Six isolated original-instruction comparisons pass after restoring PC+8 before delay slots. A real Intel WebGPU browser sequence passes 450 seconds, restart and return. This fixes the reproduced trap without changing game clocks, memory size or renderer; other historical crashes and untested events are not thereby proven fixed.
+
+The shared player preserves first-failure identity while accepting later missing worker evidence, suppresses repeated error/log writes, counts startup deadlines in foreground time, restores focus, and warns when a restored page has no confirmed save flush. Performance captures use adapter sampling times, reset stale output baselines, retain completion/storage notices and clear live numbers on failure. Global Assault adds audio-gap/trim telemetry with exact output-equivalence checks; its native engine and scheduler are unchanged.
+
+The integrated gate passes **175 tests with no skips**, plus **13 Azure packaging tests**. Shared-player and SDK browser checks, actual source downloads, native artifact comparisons and rendered browser runs have separate evidence. Only Nagano and Rugrats native Wasm change from 1.6.3. No measured FPS improvement or physical listening claim is made. Wheel still accumulates discarded queued audio in a long browser run; its cause and correction remain under investigation. Several titles retain audio underruns under the measured host conditions.
 
 ### Player update 1.6.1 — Elmo audio pacing
 
@@ -346,3 +361,4 @@ Original game code, assets, names, and trademarks remain with their respective r
 
 - [Sesame Street: Elmo’s Number Journey](https://github.com/TheGh0stShip/Sesame-Street-Elmos-Number-Journey-N64)
 - [Sesame Street: Elmo’s Letter Adventure](https://github.com/TheGh0stShip/Sesame-Street-Elmos-Letter-Adventure-N64)
+
