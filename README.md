@@ -8,7 +8,7 @@ The hosted library is publicly usable at **[source64.dev](https://source64.dev/)
 
 Maintained by **[TheGh0stShip](https://github.com/TheGh0stShip)**.
 
-Current player release: **1.7.0**.
+Current player release: **1.8.0**.
 
 ## About this repository
 
@@ -67,7 +67,7 @@ No Azure or GitHub sign-in is required to open and use the player. The applicati
 
 The Azure deployment preserves the same-origin game frames and the isolation headers required by the threaded engines. Live checks on November 4, 2026 confirmed valid HTTPS for `source64.dev`, public access to the library and all four engine files, correct WebAssembly MIME types, downloadable per-game source packages, and `same-origin` / `require-corp` isolation headers. The deployed engine hashes match the tested release artifacts. WebGPU gameplay could not be verified in the cloud test browser because it could not obtain a GPU adapter. Hosting migration does not itself establish an audio or FPS improvement.
 
-**Saves and remembered game files belong to their browser origin.** Before switching addresses, export supported saves from the previous installation and import them into the matching game on the new address. Remembered game files and preferences do not transfer automatically. Rugrats currently has no persistent save export.
+**Saves and remembered game files belong to their browser origin.** Before switching addresses, export supported saves from the previous installation and import them into the matching game on the new address. Remembered game files and preferences do not transfer automatically. Rugrats has browser-local save states; original-game Controller Pak export remains unsupported.
 
 ## Getting started
 
@@ -138,9 +138,11 @@ These are **controller** X/Y bindings. Keyboard controls remain game-specific an
 
 ## Saves
 
+Player 1.8.0 adds **Quick save**, **Quick load**, and a **Save states** dialog for Rugrats. States remain in this browser's IndexedDB and survive page reloads. They are checked against the game data, native build and graphics backend before loading. Corrupt states and failed writes preserve existing progress/storage; failed native restoration requires restarting the session. Clearing site data or ending private browsing removes these states. The other six games do not yet support whole-game save states. Original-game save import/export is separate.
+
 | Game | Current save support |
 | --- | --- |
-| Rugrats: Scavenger Hunt | Persistent Controller Pak support is not enabled in this build. |
+| Rugrats: Scavenger Hunt | Browser-local quick save/load and ten numbered state slots; original-game Controller Pak support remains unavailable. |
 | Both Elmo titles | Original-game persistent saves are not enabled. |
 | Nagano Winter Olympics ’98 | Game-specific **.npak** format, with validated import/export. |
 | BattleTanx | Player-one raw **32 KiB .mpk** Controller Pak, with validated import/export. |
@@ -160,6 +162,12 @@ Source64 is designed to accept additional browser ports without creating another
 The application's **Game integration guide** documents package metadata, loading, status, controls, audio, saves, and shutdown. A ROM or decompilation repository still needs a working browser engine before it can be registered.
 
 ## Verification and current limitations
+
+### 1.8.0 — browser-local Rugrats states
+
+The integrated gate passes **211 tests without skips**, plus **13 packaging tests**. All **380 public files** match the deployed package. Shared-player Canvas2D and WebGL tests cover exact board restoration, reload persistence, slot management, quota/corruption/build rejection, pause/input during storage, and one animation/audio lifecycle. WebGL context-loss recovery requires a fresh game instance and retains committed states. Browser rendering checks use local/headless software rendering, not a final hardware, physical-listening or complete-campaign claim.
+
+Build provenance remains distinct: Rugrats compiles recovered C through browser adaptations. The other six game programs currently compile generated instruction translations; they do not directly compile all the maintained decompilation C into browser code. Direct source-based ports remain further work. Original files stay local; no generic runtime N64 CPU interpreter is added.
 
 The current release evidence is summarized below; older release sections retain the limits of their original checks.
 
